@@ -20,6 +20,14 @@ class IssLocationAPIClient(cf.APIClient):
         except requests.exceptions.RequestException as e:
             raise Exception(f"Erreur lors de la requ te API Open Notify: {e}") from e
 
+    def __str__(self):
+        """Renvoie une chaîne de caractères contenant les coordonnées de l'ISS et la date."""
+        iss_location: dict = self.fetch_data()
+        return (
+            f"Coordonnées de l'ISS à {timestamp_to_date(iss_location['timestamp'])}:"
+            f" latitude={iss_location['iss_position']['latitude']}, longitude="
+            f"{iss_location['iss_position']['longitude']}.")
+
 
 class IssAstronautsAPIClient(cf.APIClient):
     def __init__(self):
@@ -46,4 +54,4 @@ class IssAstronautsAPIClient(cf.APIClient):
 
 def timestamp_to_date(timestamp: int) -> str:
     """Convertit un timestamp en une date au format 'AAAA-MM-JJ HH:MM:SS'."""
-    return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+    return datetime.fromtimestamp(timestamp).strftime('%H:%M:%S le %d-%m-%Y ')
