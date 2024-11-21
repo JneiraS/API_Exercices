@@ -1,19 +1,20 @@
 import requests
 
 from common_files import APIClient, timestamp_to_date
-from configuration_reader import TomlConfReader
+from exercice_two.configuration_reader import TomlConfReader
+
 from exercice_two.utils.handling_timestamps import timestamp_range_for_the_next_fives_days
 
 
-class WeatherAPI(APIClient):
+class WeatherAPIClient(APIClient):
     """
     Classe permettant de communiquer avec l'API OpenWeatherMap.
     """
-    configuration_reader = TomlConfReader('conf.toml')
+    configuration_reader = TomlConfReader('exercice_two/configuration.toml')
 
     def __init__(self):
-        self.city = WeatherAPI.configuration_reader.get_city()
-        self.api_key = WeatherAPI.configuration_reader.get_api_key()
+        self.city = WeatherAPIClient.configuration_reader.get_city()
+        self.api_key = WeatherAPIClient.configuration_reader.get_api_key()
 
     def fetch_data(self) -> dict:
         """
@@ -62,15 +63,17 @@ class WeatherAPI(APIClient):
         formatted_date = timestamp_to_date(timestamp_range[0], '%A')
         min_temp = self._find_min_temp(timestamp_range)
         max_temp = self._find_max_temp(timestamp_range)
-        print(f"Forecasts for {self.city} are:\n")
+
         print(f"{formatted_date}\n\t"
               f"minimum temperature: {min_temp}°C\n\t"
               f"maximum temperature: {max_temp}°C\n")
 
 
 def display_temperature_forecasts():
+    client = WeatherAPIClient()
+    print(f"Forecasts for {client.city} are:\n")
     for day in timestamp_range_for_the_next_fives_days():
-        WeatherAPI().display_min_max_temperature_for_day(day)
+        client.display_min_max_temperature_for_day(day)
 
 
 
