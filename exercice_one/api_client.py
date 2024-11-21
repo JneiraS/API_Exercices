@@ -5,13 +5,14 @@ from common_files.utils.hanging_timestamps_format import timestamp_to_date
 
 
 class IssLocationAPIClient(cf.APIClient):
+    """
+    Classe pour obtenir les coordonnées de l'ISS.
+    """
     def __init__(self):
         self.url_location_api = 'http://api.open-notify.org/iss-now.json'
 
     def fetch_data(self) -> dict:
-        """
-        Renvoie les données de la réponse de l'API Open Notify.
-        """
+        """Renvoie les données de la réponse de l'API Open Notify."""
         try:
             response = requests.get(self.url_location_api)
             response.raise_for_status()
@@ -29,6 +30,7 @@ class IssLocationAPIClient(cf.APIClient):
 
 
 class IssAstronautsAPIClient(cf.APIClient):
+    """Classe pour obtenir les astronautes dans l'ISS."""
     def __init__(self):
         self.url_astronauts_api = 'http://api.open-notify.org/astros.json'
 
@@ -52,5 +54,6 @@ class IssAstronautsAPIClient(cf.APIClient):
 
 
 def display_iss_informations():
+    """Affiche les coordonnées de l'ISS et les astronautes sur l'ISS"""
     print(IssLocationAPIClient())
     print(IssAstronautsAPIClient())
