@@ -1,4 +1,7 @@
+from datetime import datetime
+
 import requests
+
 import common_files as cf
 
 
@@ -17,3 +20,8 @@ class IssLocationAPIClient(cf.APIClient):
             return response.json()
         except requests.exceptions.RequestException as e:
             raise Exception(f"Erreur lors de la requ te API Open Notify: {e}") from e
+
+
+def timestamp_to_date(timestamp: int) -> str:
+    """Convertit un timestamp en une date au format 'AAAA-MM-JJ HH:MM:SS'."""
+    return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
