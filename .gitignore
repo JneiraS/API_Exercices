@@ -3,3 +3,5 @@
 *.xml
 *.iml
 /exercice_two/configuration.toml
+*pyc
+*.gitignore
