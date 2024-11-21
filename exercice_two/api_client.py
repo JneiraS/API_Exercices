@@ -48,3 +48,13 @@ def _find_min_temp(data: dict, timestamp_range: list) -> float:
     return min(temp_min)
 
 
+def _find_max_temp(data: dict, timestamp_range: list) -> float:
+    """
+    Renvoie la température minimale pour une plage de timestamp,
+    en cherchant dans les données de l'API OpenWeatherMap.
+    """
+    temp_min = []
+    for day in data["list"]:
+        if timestamp_range[1] > day["dt"] > timestamp_range[0]:
+            temp_min.append(day['main']['temp_min'])
+    return max(temp_min)
