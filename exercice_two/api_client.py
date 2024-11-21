@@ -2,6 +2,7 @@ import requests
 
 from common_files import APIClient
 from configuration_reader import TomlConfReader
+from exercice_two.utils.handling_timestamps import find_tomorrow_timestamp_range
 
 
 class WeatherAPI(APIClient):
@@ -33,4 +34,17 @@ class WeatherAPI(APIClient):
             return response.json()
         except requests.exceptions.RequestException as error:
             raise Exception(f"Erreur lors de la requ te API OpenWeatherMap: {error}") from error
+
+
+def _find_min_temp(data: dict, timestamp_range: list) -> float:
+    """
+    Renvoie la température minimale pour une plage de timestamp,
+    en cherchant dans les données de l'API OpenWeatherMap.
+    """
+    temp_min = []
+    for day in data["list"]:
+        if timestamp_range[1] > day["dt"] > timestamp_range[0]:
+            temp_min.append(day['main']['temp_min'])
+    return min(temp_min)
+
 
