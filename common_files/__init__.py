@@ -1,2 +1,2 @@
-from api_client import APIClient
-from configuration_reader import ConfReader
+from .api_client import *
+from .configuration_reader import ConfReader
