@@ -3,6 +3,7 @@ from datetime import datetime
 import requests
 
 import common_files as cf
+from common_files.utils.hanging_timestamps_format import timestamp_to_date
 
 
 class IssLocationAPIClient(cf.APIClient):
@@ -24,7 +25,7 @@ class IssLocationAPIClient(cf.APIClient):
         """Renvoie une chaîne de caractères contenant les coordonnées de l'ISS et la date."""
         iss_location: dict = self.fetch_data()
         return (
-            f"Coordonnées de l'ISS à {timestamp_to_date(iss_location['timestamp'])}:"
+            f"Coordonnées de l'ISS à {timestamp_to_date(iss_location['timestamp'], '%H:%M:%S le %d-%m-%Y')}:"
             f" latitude={iss_location['iss_position']['latitude']}, longitude="
             f"{iss_location['iss_position']['longitude']}.")
 
@@ -50,8 +51,3 @@ class IssAstronautsAPIClient(cf.APIClient):
             if personne['craft'] == 'ISS':
                 result += f"\t{personne['name']}\n"
         return result
-
-
-def timestamp_to_date(timestamp: int) -> str:
-    """Convertit un timestamp en une date au format 'AAAA-MM-JJ HH:MM:SS'."""
-    return datetime.fromtimestamp(timestamp).strftime('%H:%M:%S le %d-%m-%Y ')
