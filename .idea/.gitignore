@@ -1,0 +1,6 @@
+/shelf/
+/workspace.xml
+*.xml
+*.iml
+conf.toml
+/exercice_two/configuration.toml
