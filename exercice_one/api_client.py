@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import requests
 
 import common_files as cf
@@ -51,3 +49,8 @@ class IssAstronautsAPIClient(cf.APIClient):
             if personne['craft'] == 'ISS':
                 result += f"\t{personne['name']}\n"
         return result
+
+
+def display_iss_informations():
+    print(IssLocationAPIClient())
+    print(IssAstronautsAPIClient())
