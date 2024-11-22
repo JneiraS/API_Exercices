@@ -1,8 +1,8 @@
 import requests
 
 from common_files import APIClient, timestamp_to_date
+from common_files.display_results import Display
 from exercice_two.configuration_reader import TomlConfReader
-
 from exercice_two.utils.handling_timestamps import (
     timestamp_range_for_the_next_fives_days,
 )
@@ -58,11 +58,22 @@ class WeatherAPIClient(APIClient):
                 temp = compare_func(temp, day["main"]["temp"])
         return temp
 
-    def _find_min_temp(self, timestamp_range: list) -> float:
+    def find_min_temp(self, timestamp_range: list) -> float:
         return self._find_temp(timestamp_range, "min")
 
-    def _find_max_temp(self, timestamp_range: list) -> float:
+    def find_max_temp(self, timestamp_range: list) -> float:
         return self._find_temp(timestamp_range, "max")
+
+
+class DisplayWeatherRequestResults(Display):
+    def __init__(self, client: WeatherAPIClient):
+        self.client = client
+
+    def print(self):
+        """Affiche les prévisions des températures minimales et maximales pour les 5 prochains jours"""
+        print(f"Forecasts for {self.client.city} are:\n")
+        for day in timestamp_range_for_the_next_fives_days():
+            self._display_min_max_temperature_for_day(day)
 
     def _display_min_max_temperature_for_day(self, timestamp_range: list) -> None:
         """Affiche les températures minimales et maximales pour une plage de timestamp"""
@@ -72,14 +83,6 @@ class WeatherAPIClient(APIClient):
 
         print(
             f"{formatted_date}\n\t"
-            f"minimum temperature: {self._find_min_temp(timestamp_range)}°C\n\t"
-            f"maximum temperature: {self._find_max_temp(timestamp_range)}°C\n"
+            f"minimum temperature: {self.client.find_min_temp(timestamp_range)}°C\n\t"
+            f"maximum temperature: {self.client.find_max_temp(timestamp_range)}°C\n"
         )
-
-
-def display_temperature_forecasts():
-    """Affiche les prévisions des températures minimales et maximales pour les 5 prochains jours"""
-    client = WeatherAPIClient()
-    print(f"Forecasts for {client.city} are:\n")
-    for day in timestamp_range_for_the_next_fives_days():
-        client._display_min_max_temperature_for_day(day)
