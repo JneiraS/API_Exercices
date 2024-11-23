@@ -6,6 +6,7 @@ Ce dépôt contient un système modulaire conçu pour récupérer et afficher de
 
 Le diagramme UML ci-dessous illustre la structure du système :
 
+![class](https://raw.githubusercontent.com/JneiraS/API_Exercices/refs/heads/exercice_two/docs/ClassUML.png)
 
 
 ## **Respect des principes SOLID**
