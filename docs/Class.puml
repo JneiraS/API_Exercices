@@ -1,0 +1,71 @@
+@startuml
+' Abstract base class
+interface APIClient {
+  + {abstract} fetch_data() : dict
+}
+
+' Display interfaces
+interface Display {
+  + client: APIClient
+  + {abstract} print() : void
+}
+
+' Configuration
+interface ConfigurationReader {
+  - file_path: string
+  + read_conf() : dict
+}
+
+' API Clients
+class IssLocationAPIClient {
+  - url_api: string
+  + fetch_data() : dict
+}
+
+class IssAstronautsAPIClient {
+  - url_api: string
+  + fetch_data() : dict
+}
+
+class WeatherAPIClient {
+  - city: string
+  - api_key: string
+  + fetch_data() : dict
+}
+
+class WeatherDataProcessor {
+  + {static} find_min_max_temperature(data: dict) : tuple
+}
+
+class DisplayISSInformations {
+  + client: APIClient
+  + print() : void
+}
+
+class DisplayWeatherRequestResults {
+  + client: WeatherAPIClient
+  + print() : void
+  - _display_min_max_temperature_for_day(data: dict, timestamp_range: list) : void
+}
+
+class TomlConfReader {
+  - file_path: string
+  + read_conf() : dict
+  + get_city() : string
+  + get_api_key() : string
+}
+
+' Relationships
+Display -down-> APIClient
+
+ConfigurationReader <|.. TomlConfReader
+ConfigurationReader <-left- APIClient : depends on
+APIClient <|.. IssLocationAPIClient
+APIClient <|.. WeatherAPIClient
+APIClient <|.. IssAstronautsAPIClient
+
+Display <|.left. DisplayISSInformations
+Display <|.up. DisplayWeatherRequestResults
+
+WeatherAPIClient --> WeatherDataProcessor : uses
+@enduml
