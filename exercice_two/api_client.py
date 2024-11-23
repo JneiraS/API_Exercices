@@ -18,6 +18,7 @@ class WeatherAPIClient(APIClient):
     def __init__(self):
         self.city = WeatherAPIClient.configuration_reader.get_city()
         self.api_key = WeatherAPIClient.configuration_reader.get_api_key()
+        self.data_processor = WeatherDataProcessor()
 
     def fetch_data(self) -> dict:
         """
@@ -41,7 +42,14 @@ class WeatherAPIClient(APIClient):
                 f"Erreur lors de la requ te API OpenWeatherMap: {error}"
             ) from error
 
-    def _find_temp(self, timestamp_range: list, operation: str) -> float:
+
+class WeatherDataProcessor:
+    """
+    Classe pour traiter les données météorologiques.
+    """
+
+    @staticmethod
+    def _find_temp(timestamp_range: list, operation: str, data_forecast: dict) -> float:
         """
         Renvoie la température min/max pour une plage de timestamp,
         en cherchant dans les données de l'API OpenWeatherMap.
@@ -53,16 +61,16 @@ class WeatherAPIClient(APIClient):
         temp = float("inf") if operation == "min" else float("-inf")
         compare_func = min if operation == "min" else max
 
-        for day in self.fetch_data()["list"]:
+        for day in data_forecast["list"]:
             if timestamp_range[1] > day["dt"] > timestamp_range[0]:
                 temp = compare_func(temp, day["main"]["temp"])
         return temp
 
-    def find_min_temp(self, timestamp_range: list) -> float:
-        return self._find_temp(timestamp_range, "min")
+    def find_min_temp(self, timestamp_range: list, data_forecast: dict) -> float:
+        return self._find_temp(timestamp_range, "min", data_forecast)
 
-    def find_max_temp(self, timestamp_range: list) -> float:
-        return self._find_temp(timestamp_range, "max")
+    def find_max_temp(self, timestamp_range: list, data_forecast: dict) -> float:
+        return self._find_temp(timestamp_range, "max", data_forecast)
 
 
 class DisplayWeatherRequestResults(Display):
@@ -83,6 +91,7 @@ class DisplayWeatherRequestResults(Display):
 
         print(
             f"{formatted_date}\n\t"
-            f"minimum temperature: {self.client.find_min_temp(timestamp_range)}°C\n\t"
-            f"maximum temperature: {self.client.find_max_temp(timestamp_range)}°C\n"
+            f"minimum temperature: "
+            f"{self.client.data_processor.find_min_temp(timestamp_range, self.client.fetch_data())}°C\n\t"
+            f"maximum temperature: {self.client.data_processor.find_max_temp(timestamp_range, self.client.fetch_data())}°C\n"
         )
