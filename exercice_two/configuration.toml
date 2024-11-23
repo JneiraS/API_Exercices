@@ -1,0 +1,9 @@
+[api.weather]
+
+key = "API_KEY"
+
+[location]
+
+#city = "Toulouse"
+
+city = "Saint-Geours-de-Maremne"
