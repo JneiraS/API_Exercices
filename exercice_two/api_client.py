@@ -18,7 +18,6 @@ class WeatherAPIClient(APIClient):
     def __init__(self):
         self.city = WeatherAPIClient.configuration_reader.get_city()
         self.api_key = WeatherAPIClient.configuration_reader.get_api_key()
-        self.data_processor = WeatherDataProcessor()
 
     def fetch_data(self) -> dict:
         """
@@ -49,28 +48,18 @@ class WeatherDataProcessor:
     """
 
     @staticmethod
-    def _find_temp(timestamp_range: list, operation: str, data_forecast: dict) -> float:
-        """
-        Renvoie la température min/max pour une plage de timestamp,
-        en cherchant dans les données de l'API OpenWeatherMap.
-
-        Args:
-            timestamp_range: Liste contenant timestamp début et fin
-            operation: 'min' ou 'max' pour spécifier l'opération
-        """
-        temp = float("inf") if operation == "min" else float("-inf")
-        compare_func = min if operation == "min" else max
+    def find_min_max_temperature(
+            timestamp_range: list, data_forecast: dict
+    ) -> tuple[float, float]:
+        """Renvoie les températures minimale et maximale pour une plage de timestamps."""
+        min_temp = float("inf")
+        max_temp = float("-inf")
 
         for day in data_forecast["list"]:
             if timestamp_range[1] > day["dt"] > timestamp_range[0]:
-                temp = compare_func(temp, day["main"]["temp"])
-        return temp
-
-    def find_min_temp(self, timestamp_range: list, data_forecast: dict) -> float:
-        return self._find_temp(timestamp_range, "min", data_forecast)
-
-    def find_max_temp(self, timestamp_range: list, data_forecast: dict) -> float:
-        return self._find_temp(timestamp_range, "max", data_forecast)
+                min_temp = min(min_temp, day["main"]["temp"])
+                max_temp = max(max_temp, day["main"]["temp"])
+        return min_temp, max_temp
 
 
 class DisplayWeatherRequestResults(Display):
@@ -89,9 +78,12 @@ class DisplayWeatherRequestResults(Display):
         # Affiche le jour en toute lettre
         formatted_date = timestamp_to_date(timestamp_range[0], "%A")
 
+        min_temp, max_temp = WeatherDataProcessor.find_min_max_temperature(
+            timestamp_range, self.client.fetch_data()
+        )
+
         print(
             f"{formatted_date}\n\t"
-            f"minimum temperature: "
-            f"{self.client.data_processor.find_min_temp(timestamp_range, self.client.fetch_data())}°C\n\t"
-            f"maximum temperature: {self.client.data_processor.find_max_temp(timestamp_range, self.client.fetch_data())}°C\n"
+            f"minimum temperature: {min_temp}°C\n\t"
+            f"maximum temperature: {max_temp}°C\n"
         )
