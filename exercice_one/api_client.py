@@ -11,7 +11,7 @@ class IssLocationAPIClient(cf.APIClient):
     """
 
     def __init__(self):
-        self.url_api = 'http://api.open-notify.org/iss-now.json'
+        self.url_api = "http://api.open-notify.org/iss-now.json"
 
     def fetch_data(self) -> dict:
         """Renvoie les données de la réponse de l'API Open Notify."""
@@ -27,7 +27,7 @@ class IssAstronautsAPIClient(cf.APIClient):
     """Classe pour obtenir les astronautes dans l'ISS."""
 
     def __init__(self):
-        self.url_api = 'http://api.open-notify.org/astros.json'
+        self.url_api = "http://api.open-notify.org/astros.json"
 
     def fetch_data(self) -> dict:
         try:
@@ -40,6 +40,7 @@ class IssAstronautsAPIClient(cf.APIClient):
 
 class DisplayISSInformations(Display):
     """Classe pour afficher les informations de l'ISS."""
+
     def __init__(self, client: IssLocationAPIClient | IssAstronautsAPIClient):
         self.client = client
 
@@ -48,16 +49,23 @@ class DisplayISSInformations(Display):
         data: dict = self.client.fetch_data()
 
         if isinstance(self.client, IssLocationAPIClient):
-            timestamp: int = data["timestamp"]
-            iss_position: dict = data["iss_position"]
-            print(
-                f"Coordonnées de l'ISS à {timestamp_to_date(timestamp, '%H:%M:%S le %d-%m-%Y')}:"
-                f" latitude={iss_position['latitude']}, longitude={iss_position['longitude']}.")
+            self.display_iss_location(data)
 
         if isinstance(self.client, IssAstronautsAPIClient):
-            people: list = data.get('people', [])
-            count: int = sum(1 for person in people if person['craft'] == 'ISS')
-            print(f"Il y actuellement {count} astronautes sur l'ISS:")
-            for person in people:
-                if person['craft'] == 'ISS':
-                    print(f"\t{person['name']}")
+            self.display_astronauts(data)
+
+    def display_iss_location(self, data: dict):
+        timestamp: int = data["timestamp"]
+        iss_position: dict = data["iss_position"]
+        print(
+            f"Coordonnées de l'ISS à {timestamp_to_date(timestamp, '%H:%M:%S le %d-%m-%Y')}:"
+            f" latitude={iss_position['latitude']}, longitude={iss_position['longitude']}."
+        )
+
+    def display_astronauts(self, data: dict):
+        people: list = data.get("people", [])
+        count: int = sum(1 for person in people if person["craft"] == "ISS")
+        print(f"Il y actuellement {count} astronautes sur l'ISS:")
+        for person in people:
+            if person["craft"] == "ISS":
+                print(f"\t{person['name']}")
