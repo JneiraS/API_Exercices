@@ -49,12 +49,12 @@ class DisplayISSInformations(Display):
         data: dict = self.client.fetch_data()
 
         if isinstance(self.client, IssLocationAPIClient):
-            self.display_iss_location(data)
+            self._display_iss_location(data)
 
         if isinstance(self.client, IssAstronautsAPIClient):
-            self.display_astronauts(data)
+            self._display_astronauts(data)
 
-    def display_iss_location(self, data: dict):
+    def _display_iss_location(self, data: dict):
         timestamp: int = data["timestamp"]
         iss_position: dict = data["iss_position"]
         print(
@@ -62,7 +62,7 @@ class DisplayISSInformations(Display):
             f" latitude={iss_position['latitude']}, longitude={iss_position['longitude']}."
         )
 
-    def display_astronauts(self, data: dict):
+    def _display_astronauts(self, data: dict):
         people: list = data.get("people", [])
         count: int = sum(1 for person in people if person["craft"] == "ISS")
         print(f"Il y actuellement {count} astronautes sur l'ISS:")
