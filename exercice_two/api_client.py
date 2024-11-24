@@ -1,6 +1,6 @@
 import requests
 
-from common_files import APIClient, timestamp_to_date
+from common_files import APIClient, timestamp_to_date, ConfReader
 from common_files.display_results import Display
 from exercice_two.configuration_reader import TomlConfReader
 from exercice_two.utils.handling_timestamps import (
@@ -13,11 +13,8 @@ class WeatherAPIClient(APIClient):
     Classe permettant de communiquer avec l'API OpenWeatherMap.
     """
 
-    configuration_reader = TomlConfReader("exercice_two/configuration.toml")
-
-    def __init__(self):
-        self.city = WeatherAPIClient.configuration_reader.get_city()
-        self.api_key = WeatherAPIClient.configuration_reader.get_api_key()
+    def __init__(self, config_reader: ConfReader = TomlConfReader("exercice_two/configuration.toml")):
+        self.config_reader = config_reader
 
     def fetch_data(self) -> dict:
         """
@@ -26,8 +23,8 @@ class WeatherAPIClient(APIClient):
         """
         api_url = "https://api.openweathermap.org/data/2.5/forecast"
         params = {
-            "q": self.city,
-            "appid": self.api_key,
+            "q": self.config_reader.read_conf()['location']['city'],
+            "appid": self.config_reader.read_conf()['api']['weather']['key'],
             "units": "metric",
             "lang": "fr",
             "exclude": "hourly,minutely,current,alerts",
@@ -68,7 +65,7 @@ class DisplayWeatherRequestResults(Display):
 
     def print(self):
         """Affiche les prévisions des températures minimales et maximales pour les 5 prochains jours"""
-        print(f"Forecasts for {self.client.city} are:\n")
+        print(f"Forecasts for {self.client.config_reader.read_conf()['location']['city']} are:\n")
         for day in timestamp_range_for_the_next_fives_days():
             self._display_min_max_temperature_for_day(day)
 
