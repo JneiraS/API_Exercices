@@ -68,4 +68,6 @@ Display <|.left. DisplayISSInformations
 Display <|.up. DisplayWeatherRequestResults
 
 WeatherAPIClient ..> WeatherDataProcessor : uses
+TomlConfReader <.left. WeatherAPIClient: << depends >>
+
 @enduml
