@@ -43,7 +43,7 @@ class DisplayISSInformations {
 }
 
 class DisplayWeatherRequestResults {
-  + client: WeatherAPIClient
+  + client: APIClient
   + print() : void
   - _display_min_max_temperature_for_day(data: dict, timestamp_range: list) : void
 }
@@ -59,7 +59,7 @@ class TomlConfReader {
 Display -down-> APIClient
 
 ConfigurationReader <|.. TomlConfReader
-ConfigurationReader <-left- APIClient : depends on
+ConfigurationReader <.left. APIClient : depends on
 APIClient <|.. IssLocationAPIClient
 APIClient <|.. WeatherAPIClient
 APIClient <|.. IssAstronautsAPIClient
@@ -67,5 +67,5 @@ APIClient <|.. IssAstronautsAPIClient
 Display <|.left. DisplayISSInformations
 Display <|.up. DisplayWeatherRequestResults
 
-WeatherAPIClient --> WeatherDataProcessor : uses
+WeatherAPIClient ..> WeatherDataProcessor : uses
 @enduml
